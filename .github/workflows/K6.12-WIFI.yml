@@ -85,7 +85,7 @@ jobs:
         echo "VERSION_KERNEL=$VERSION_KERNEL" >> $GITHUB_ENV
         
     - name: Remove LibWrt
-      if: inputs.rmlibwrt == true
+      if: inputs.rmlibwrt == 'true'
       run: |
         cd openwrt
         for patch in $(ls -v patches/rmlibwrt/*.patch); do
@@ -98,7 +98,7 @@ jobs:
         done
 
     - name: Remove ImmortalWrt Feeds
-      if: inputs.rmimmortal == true
+      if: inputs.rmimmortal == 'true'
       run: |
         cd openwrt
         for patch in $(ls -v patches/rmimmortal/*.patch); do
@@ -142,7 +142,7 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRT_PATH/.config
 
     - name: Add Extra Config
-      if: inputs.extraconfig == true
+      if: inputs.extraconfig == 'true'
       run: cat extra.config >> $CONFIG_FILE
 
     - name: Download DL Package(下载DL软件包)
