@@ -53,8 +53,9 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android $AGENT_TOOLSDIRECTORY
+        sudo rm -rf /etc/apt/sources.list.d $AGENT_TOOLSDIRECTORY
         sudo -E apt-get -y update
+        docker rmi $(docker images -q) &
         sudo -E apt-get -y install $(curl -fsSL is.gd/depends_ubuntu_2204)
         sudo -E systemctl daemon-reload
         sudo -E apt-get -y clean
