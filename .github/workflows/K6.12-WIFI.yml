@@ -101,14 +101,7 @@ jobs:
       if: inputs.rmimmortal == 'true'
       run: |
         cd $OPENWRT_PATH
-        for patch in $(ls -v ../patches/rmimmortal/*.patch); do
-          patch -p1 < "$patch"
-          if [ $? -ne 0 ]; then
-            echo "Fail: $patch"
-          else
-            echo "Applied: $patch"
-          fi
-        done
+        sed -i 's/github.com\/immortalwrt/git.openwrt.org\/feed/g' feeds.conf.default
 
     - name: Generate Variables(生成变量)
       run: |
