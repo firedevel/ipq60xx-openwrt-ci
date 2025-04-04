@@ -1,0 +1,17 @@
+diff --git a/feeds.conf.default b/feeds.conf.default
+index 91b86d7a57..f63893a3af 100644
+--- a/feeds.conf.default
++++ b/feeds.conf.default
+@@ -1,6 +1,6 @@
+-src-git packages https://github.com/immortalwrt/packages.git
+-src-git luci https://github.com/immortalwrt/luci.git
+-src-git routing https://git.openwrt.org/feed/routing.git
+-src-git telephony https://git.openwrt.org/feed/telephony.git
+-src-git video https://github.com/openwrt/video.git
++src-git packages https://git.openwrt.org/feed/packages.git
++src-git luci https://git.openwrt.org/feed/luci.git
++src-git routing https://git.openwrt.org/feed/routing.git
++# src-git telephony https://git.openwrt.org/feed/telephony.git
++# src-git video https://git.openwrt.org/feed/video.git
+ src-git nss_packages https://github.com/LiBwrt/nss-packages.git
+

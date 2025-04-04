@@ -1,0 +1,112 @@
+diff --git a/include/version.mk b/include/version.mk
+index 184c37240b..e9829e860a 100644
+--- a/include/version.mk
++++ b/include/version.mk
+@@ -33,11 +33,11 @@ VERSION_REPO:=$(call qstrip,$(CONFIG_VERSION_REPO))
+ VERSION_REPO:=$(if $(VERSION_REPO),$(VERSION_REPO),https://downloads.openwrt.org/snapshots)
+ 
+ VERSION_DIST:=$(call qstrip,$(CONFIG_VERSION_DIST))
+-VERSION_DIST:=$(if $(VERSION_DIST),$(VERSION_DIST),LiBwrt)
++VERSION_DIST:=$(if $(VERSION_DIST),$(VERSION_DIST),OpenWrt)
+ VERSION_DIST_SANITIZED:=$(call sanitize,$(VERSION_DIST))
+ 
+ VERSION_MANUFACTURER:=$(call qstrip,$(CONFIG_VERSION_MANUFACTURER))
+-VERSION_MANUFACTURER:=$(if $(VERSION_MANUFACTURER),$(VERSION_MANUFACTURER),LiBwrt)
++VERSION_MANUFACTURER:=$(if $(VERSION_MANUFACTURER),$(VERSION_MANUFACTURER),OpenWrt)
+ 
+ VERSION_MANUFACTURER_URL:=$(call qstrip,$(CONFIG_VERSION_MANUFACTURER_URL))
+ VERSION_MANUFACTURER_URL:=$(if $(VERSION_MANUFACTURER_URL),$(VERSION_MANUFACTURER_URL),https://openwrt.org/)
+diff --git a/package/base-files/files/bin/config_generate b/package/base-files/files/bin/config_generate
+index de8e2f2379..6691958371 100755
+--- a/package/base-files/files/bin/config_generate
++++ b/package/base-files/files/bin/config_generate
+@@ -311,7 +311,7 @@ generate_static_system() {
+ 	uci -q batch <<-EOF
+ 		delete system.@system[0]
+ 		add system system
+-		set system.@system[-1].hostname='LibWrt'
++		set system.@system[-1].hostname='OpenWrt'
+ 		set system.@system[-1].timezone='CST-8'
+ 		set system.@system[-1].ttylogin='0'
+ 		set system.@system[-1].log_size='128'
+diff --git a/package/base-files/files/etc/banner b/package/base-files/files/etc/banner
+index fd0297f4d1..a92ad9c850 100644
+--- a/package/base-files/files/etc/banner
++++ b/package/base-files/files/etc/banner
+@@ -1,10 +1,8 @@
+- __           ____    Commercial         __      
+-/\ \       __/\  _`\       Prohibition  /\ \__   
+-\ \ \     /\_\ \ \L\ \  __  __  __  _ __\ \ ,_\  
+- \ \ \  __\/\ \ \  _ <'/\ \/\ \/\ \/\`'__\ \ \/  
+-  \ \ \L\ \\ \ \ \ \L\ \ \ \_/ \_/ \ \ \/ \ \ \_ 
+-   \ \____/ \ \_\ \____/\ \___x___/'\ \_\  \ \__\
+-    \/___/   \/_/\/___/  \/__//__/   \/_/   \/__/                         
+- -----------------------------------------------------
+-  %D %V, %C
++  _______                     ________        __
++ |       |.-----.-----.-----.|  |  |  |.----.|  |_
++ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
++ |_______||   __|_____|__|__||________||__|  |____|
++          |__| W I R E L E S S   F R E E D O M
+  -----------------------------------------------------
++ %D %V, %C
++ -----------------------------------------------------
+\ No newline at end of file
+diff --git a/package/base-files/files/etc/uci-defaults/990_set-wireless.sh b/package/base-files/files/etc/uci-defaults/990_set-wireless.sh
+index 81cac822ae..892f076e89 100755
+--- a/target/linux/qualcommax/base-files/etc/uci-defaults/990_set-wireless.sh
++++ b/target/linux/qualcommax/base-files/etc/uci-defaults/990_set-wireless.sh
+@@ -2,7 +2,7 @@
+ . /usr/share/libubox/jshn.sh
+ 
+ # 默认WIFI设置
+-BASE_SSID='LiBwrt'
++BASE_SSID='OpenWrt'
+ BASE_WORD='12345678'
+ 
+ # 获取无线设备的数量
+diff --git a/package/base-files/image-config.in b/package/base-files/image-config.in
+index 1edeb16c54..67ef4d415a 100644
+--- a/package/base-files/image-config.in
++++ b/package/base-files/image-config.in
+@@ -165,10 +165,10 @@ if VERSIONOPT
+ 	config VERSION_DIST
+ 		string
+ 		prompt "Release distribution"
+-		default "LiBwrt"
++		default "OpenWrt"
+ 		help
+ 			This is the name of the release distribution.
+-			If unspecified, it defaults to LiBwrt.
++			If unspecified, it defaults to OpenWrt.
+ 
+ 	config VERSION_NUMBER
+ 		string
+diff --git a/package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc b/package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc
+index f96961f940..532ee03f12 100644
+--- a/package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc
++++ b/package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc
+@@ -104,6 +104,6 @@ set ${si}=wifi-iface
+ set ${si}.device='${name}'
+ set ${si}.network='lan'
+ set ${si}.mode='ap'
+-set ${si}.ssid='${defaults?.ssid || "LiBwrt"}'
++set ${si}.ssid='${defaults?.ssid || "OpenWrt"}'
+ set ${si}.encryption='${defaults?.encryption || "none"}'
+ set ${si}.key='${defaults?.key || ""}'
+diff --git a/package/base-files/Makefile b/package/base-files/Makefile
+index 0327ad826e..2bd39d4796 100644
+--- a/package/base-files/Makefile
++++ b/package/base-files/Makefile
+@@ -191,10 +191,6 @@ define Package/base-files/install
+ 		$(1)/etc/openwrt_version \
+ 		$(1)/usr/lib/os-release
+ 
+-	sed -i -e "s,.*,\o033[31m&\o033[0m," \
+-	    -e "s,Open.*,\o033[93m&\o033[0m," \
+-	    -e "s,W .*,\o033[34m&\o033[0m," $(1)/etc/banner
+-
+ 	$(SED) "s#%PATH%#$(TARGET_INIT_PATH)#g" \
+ 		$(1)/sbin/hotplug-call \
+ 		$(1)/etc/preinit \
+ 

@@ -1,20 +1,33 @@
-name: IPQ60XX-24.10-6.12-WIFI
+name: K6.12-NOWIFI
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 0 19 * * *
+    inputs:
+      extraconfig:
+        description: 'Add Extra Config(extra.config)'
+        default: true
+        required: true
+        type: bool
+      rmlibwrt:
+        description: 'Remove LibWrt'
+        default: true
+        required: true
+        type: bool
+      rmimmortal:
+        description: 'Remove ImmortalWrt Feeds'
+        default: false
+        required: true
+        type: bool
 
 env:
   REPO_URL: https://github.com/LiBwrt/openwrt-6.x.git
-  REPO_BRANCH: 24.10-6.12
-  CONFIG_FILE: configs/ipq60xx-6.12-wifi.config
-  DIY_SCRIPT: diy-script.sh
+  REPO_BRANCH: kernel-6.12
+  CONFIG_FILE: configs/ipq60xx-6.12-nowifi.config
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
-  FIRMWARE_TAG: IPQ60XX-24.10-6.12-WIFI
+  FIRMWARE_TAG: Kernel6.12-NOWIFI
   TZ: Asia/Shanghai
 
 jobs:
@@ -68,6 +81,34 @@ jobs:
         echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
         VERSION_INFO=$(git show -s --date=short --format="作者: %an<br/>时间: %cd<br/>内容: %s<br/>hash: %H")
         echo "VERSION_INFO=$VERSION_INFO" >> $GITHUB_ENV
+        VERSION_KERNEL=$(grep -oP 'LINUX_KERNEL_HASH-\K[0-9]+\.[0-9]+\.[0-9]+' include/kernel-6.12)
+        echo "VERSION_KERNEL=$VERSION_KERNEL" >> $GITHUB_ENV
+        
+    - name: Remove LibWrt
+      if: inputs.rmlibwrt == true
+      run: |
+        cd openwrt
+        for patch in $(ls -v patches/rmlibwrt/*.patch); do
+          patch -p1 < "$patch"
+          if [ $? -ne 0 ]; then
+            echo "Fail: $patch"
+          else
+            echo "Applied: $patch"
+          fi
+        done
+
+    - name: Remove ImmortalWrt Feeds
+      if: inputs.rmimmortal == true
+      run: |
+        cd openwrt
+        for patch in $(ls -v patches/rmimmortal/*.patch); do
+          patch -p1 < "$patch"
+          if [ $? -ne 0 ]; then
+            echo "Fail: $patch"
+          else
+            echo "Applied: $patch"
+          fi
+        done
 
     - name: Generate Variables(生成变量)
       run: |
@@ -99,6 +140,10 @@ jobs:
       run: |
         [ -e files ] && mv files $OPENWRT_PATH/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRT_PATH/.config
+
+    - name: Add Extra Config
+      if: inputs.extraconfig == true
+      run: cat extra.config >> $CONFIG_FILE
 
     - name: Download DL Package(下载DL软件包)
       run: |
@@ -158,13 +203,13 @@ jobs:
         artifacts: ${{ env.FIRMWARE_PATH }}/*
         body: |
           **This is OpenWrt Firmware for ${{ env.FIRMWARE_TAG }}**
-          ### 📒 固件信息24.10(WIFI)
-          - 带WIFI带有线NSS的6.12内核固件
-          - 💻 这是 ${{ env.FIRMWARE_TAG }} 平台使用的 OpenWrt 固件
+          ### 📒 固件信息(无WIFI)
+          - 无WIFI带有线NSS的6.12内核固件
           - ⚽ 固件源码: ${{ env.REPO_URL }}
           - 💝 源码分支: ${{ env.REPO_BRANCH }}
           - 🌐 默认地址: 192.168.1.1
-          - 🔑 默认密码: password
+          - 📦 移除额外包: ${{ inputs.minipack }}, 去除LibWrt标志: ${{ inputs.rmlibwrt }}, 移除ImmortalWrt源: ${{ inputs.rmimmortal }}
+          - 📥 添加额外配置: ${{ inputs.extraconfig }}
           ### 🧊 固件版本
-          - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
+          - 固件内核版本：${{ env.VERSION_KERNEL }}
           - ${{ env.VERSION_INFO }}
