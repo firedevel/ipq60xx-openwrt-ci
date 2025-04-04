@@ -87,8 +87,8 @@ jobs:
     - name: Remove LibWrt
       if: inputs.rmlibwrt == 'true'
       run: |
-        cd openwrt
-        for patch in $(ls -v patches/rmlibwrt/*.patch); do
+        cd $OPENWRT_PATH
+        for patch in $(ls -v ../patches/rmlibwrt/*.patch); do
           patch -p1 < "$patch"
           if [ $? -ne 0 ]; then
             echo "Fail: $patch"
@@ -100,8 +100,8 @@ jobs:
     - name: Remove ImmortalWrt Feeds
       if: inputs.rmimmortal == 'true'
       run: |
-        cd openwrt
-        for patch in $(ls -v patches/rmimmortal/*.patch); do
+        cd $OPENWRT_PATH
+        for patch in $(ls -v ../patches/rmimmortal/*.patch); do
           patch -p1 < "$patch"
           if [ $? -ne 0 ]; then
             echo "Fail: $patch"
