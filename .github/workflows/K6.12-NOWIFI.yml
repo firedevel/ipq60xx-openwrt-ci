@@ -134,7 +134,7 @@ jobs:
 
     - name: Add Extra Config
       if: inputs.extraconfig == 'true'
-      run: cat extra.config >> $CONFIG_FILE
+      run: cat extra.config >> $OPENWRT_PATH/.config
 
     - name: Download DL Package(下载DL软件包)
       run: |
