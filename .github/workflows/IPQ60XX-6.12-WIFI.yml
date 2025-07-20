@@ -1,4 +1,4 @@
-name: K6.12-NOWIFI
+name: K6.12-WIFI
 
 on:
   workflow_dispatch:
